@@ -121,6 +121,15 @@ def create_app():
         except (requests.exceptions.RequestException, ValueError) as err:
             app.logger.error('Error getting contacts: %s', str(err))
 
+        try:
+            APP.logger.debug('Touching contacts.')
+            requests.get(url='{}/ready'.format(APP.config["CONTACTS_URI"]), headers=hed, timeout=APP.config['BACKEND_TIMEOUT'])
+
+            APP.logger.debug('Touching users.')
+            requests.get(url='{}/ready'.format(APP.config["USERSERVICE_URI"]), headers=hed, timeout=APP.config['BACKEND_TIMEOUT'])
+        except (requests.exceptions.RequestException, ValueError) as err:
+            APP.logger.error('Error touching python services: %s', str(err))
+
         _populate_contact_labels(account_id, transaction_list, contacts)
 
         return render_template('index.html',
